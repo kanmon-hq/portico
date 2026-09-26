@@ -41,6 +41,7 @@ SQLITE_DB_PATH = os.getenv("SQLITE_DB_PATH", "portico.db")
 # AWS DynamoDB 設定
 DYNAMODB_TABLE_NAME = os.getenv("DYNAMODB_TABLE_NAME", "portico_servers")
 AWS_REGION = os.getenv("AWS_REGION", os.getenv("AWS_DEFAULT_REGION", "ap-northeast-1"))
+DYNAMODB_ENDPOINT = os.getenv("DYNAMODB_ENDPOINT", os.getenv("AWS_ENDPOINT_URL"))
 
 # GCP Firestore 設定
 FIRESTORE_COLLECTION = os.getenv("FIRESTORE_COLLECTION", "portico_servers")

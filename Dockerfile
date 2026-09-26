@@ -19,7 +19,7 @@ RUN uv build --wheel --out-dir /dist
 # ─── Production Runner Stage ─────────────────────────────────────────
 FROM python:3.14-slim AS runner
 
-ARG EXTRAS=""
+ARG EXTRAS="all"
 
 LABEL maintainer="northfieldzz"
 LABEL service="portico"

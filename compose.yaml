@@ -10,8 +10,12 @@ services:
     ports:
       - "8001:8001"
     environment:
-      STORAGE_BACKEND: ${STORAGE_BACKEND:-sqlite}
-      SQLITE_DB_PATH: /data/portico.db
+      STORAGE_BACKEND: ${STORAGE_BACKEND:-dynamodb}
+      DYNAMODB_TABLE_NAME: ${DYNAMODB_TABLE_NAME:-portico_servers}
+      DYNAMODB_ENDPOINT: ${DYNAMODB_ENDPOINT:-http://dynamodb-local:8000}
+      AWS_REGION: ${AWS_REGION:-ap-northeast-1}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-local}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-local}
       CACHE_LAYER: ${CACHE_LAYER:-two_tier}
       VALKEY_URL: ${VALKEY_URL:-redis://valkey:6379/0}
       CACHE_L1_TTL_SECONDS: ${CACHE_L1_TTL_SECONDS:-30}
@@ -20,17 +24,26 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       MOCK_EXTERNAL_APIS: ${MOCK_EXTERNAL_APIS:-true}
       INSECURE_NO_GATEWAY_AUTH: ${INSECURE_NO_GATEWAY_AUTH:-true}
-    volumes:
-      - portico_data:/data
     depends_on:
       valkey:
         condition: service_healthy
+      dynamodb-local:
+        condition: service_started
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:8001/health || exit 1"]
+      test: [ "CMD-SHELL", "wget -q --spider http://localhost:8001/health || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
+
+  dynamodb-local:
+    image: amazon/dynamodb-local:latest
+    user: root
+    command: [ "-jar", "DynamoDBLocal.jar", "-sharedDb", "-dbPath", "/data" ]
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - dynamodb_data:/data
 
   valkey:
     image: valkey/valkey:8-alpine
@@ -39,11 +52,11 @@ services:
     volumes:
       - valkey_data:/data
     healthcheck:
-      test: ["CMD", "valkey-cli", "ping"]
+      test: [ "CMD", "valkey-cli", "ping" ]
       interval: 5s
       timeout: 3s
       retries: 5
 
 volumes:
-  portico_data:
+  dynamodb_data:
   valkey_data:

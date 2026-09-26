@@ -8,7 +8,7 @@ import asyncio
 import logging
 from typing import Any
 
-from portico.core.config import AWS_REGION, DYNAMODB_TABLE_NAME
+from portico.core.config import AWS_REGION, DYNAMODB_ENDPOINT, DYNAMODB_TABLE_NAME
 from portico.storage.base import BaseServerRepository
 
 logger = logging.getLogger(__name__)
@@ -17,33 +17,74 @@ logger = logging.getLogger(__name__)
 class DynamoDBServerRepository(BaseServerRepository):
     """DynamoDB (PK: TENANT#<tenant_id>, SK: SERVER#<server_id>) をバックエンドとするサーバーリポジトリ"""
 
-    def __init__(self, table_name: str = DYNAMODB_TABLE_NAME, region_name: str = AWS_REGION):
+    def __init__(
+        self,
+        table_name: str = DYNAMODB_TABLE_NAME,
+        region_name: str = AWS_REGION,
+        endpoint_url: str | None = DYNAMODB_ENDPOINT,
+    ):
         self.table_name = table_name
         self.region_name = region_name
+        self.endpoint_url = endpoint_url
+        self._dynamodb = None
         self._table = None
 
-    def _get_table(self):
-        if self._table is None:
+    def _get_resource(self):
+        if self._dynamodb is None:
             try:
                 import boto3
 
-                dynamodb = boto3.resource("dynamodb", region_name=self.region_name)
-                self._table = dynamodb.Table(self.table_name)
+                self._dynamodb = boto3.resource(
+                    "dynamodb",
+                    region_name=self.region_name,
+                    endpoint_url=self.endpoint_url,
+                )
             except ImportError as exc:
                 raise RuntimeError("boto3 is required to use DynamoDB storage backend. Install via: pip install 'portico[dynamodb]' (or uv add 'portico[dynamodb]')") from exc
+        return self._dynamodb
+
+    def _get_table(self):
+        if self._table is None:
+            dynamodb = self._get_resource()
+            self._table = dynamodb.Table(self.table_name)
         return self._table
 
     async def init_storage(self) -> None:
         table = self._get_table()
-        # Verify table connectivity
-        try:
-            await asyncio.to_thread(lambda: table.table_status)
-            logger.info("⚡ DynamoDB Storage connected to table '%s'", self.table_name)
-        except Exception as exc:
-            logger.warning("⚠️ DynamoDB table verification check: %s", exc)
+        # Verify table connectivity / auto-create if not existing (e.g. DynamoDB Local)
+        def _check_or_create():
+            try:
+                _ = table.table_status
+                logger.info("⚡ DynamoDB Storage connected to table '%s'", self.table_name)
+            except Exception as exc:
+                # Check for ResourceNotFoundException
+                exc_name = getattr(exc, "response", {}).get("Error", {}).get("Code", "")
+                if exc_name == "ResourceNotFoundException" or "ResourceNotFoundException" in str(exc):
+                    logger.info("⚡ DynamoDB table '%s' not found. Creating table...", self.table_name)
+                    dynamodb = self._get_resource()
+                    new_table = dynamodb.create_table(
+                        TableName=self.table_name,
+                        KeySchema=[
+                            {"AttributeName": "PK", "KeyType": "HASH"},
+                            {"AttributeName": "SK", "KeyType": "RANGE"},
+                        ],
+                        AttributeDefinitions=[
+                            {"AttributeName": "PK", "AttributeType": "S"},
+                            {"AttributeName": "SK", "AttributeType": "S"},
+                        ],
+                        BillingMode="PAY_PER_REQUEST",
+                    )
+                    new_table.wait_until_exists()
+                    self._table = new_table
+                    logger.info("⚡ DynamoDB table '%s' created successfully.", self.table_name)
+                else:
+                    logger.warning("⚠️ DynamoDB table verification check: %s", exc)
+
+        await asyncio.to_thread(_check_or_create)
 
     async def close(self) -> None:
         self._table = None
+        self._dynamodb = None
 
     def _item_to_server(self, item: dict[str, Any]) -> dict[str, Any]:
         return {
