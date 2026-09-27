@@ -19,20 +19,19 @@ from httpx import ASGITransport, AsyncClient
 
 from portico.cache.memory_cache import MemoryCache
 from portico.main import app
-from portico.storage.memory import MemoryServerRepository
+from portico.storage.sqlite import SQLiteServerRepository
 
 
 @pytest.fixture(autouse=True)
 def reset_storage_and_cache(monkeypatch):
-    """各テスト実行前にストレージとキャッシュをクリーンなメモリ状態にリセットする。"""
-    monkeypatch.setattr("portico.core.config.STORAGE_BACKEND", "memory")
+    """各テスト実行前にストレージとキャッシュをクリーンな状態にリセットする。"""
+    monkeypatch.setattr("portico.core.config.STORAGE_BACKEND", "sqlite")
     monkeypatch.setattr("portico.core.config.CACHE_LAYER", "memory")
-    repo = MemoryServerRepository()
+    repo = SQLiteServerRepository(db_path=":memory:")
     cache = MemoryCache()
     monkeypatch.setattr("portico.storage.factory._storage_instance", repo)
     monkeypatch.setattr("portico.cache.factory._cache_instance", cache)
     yield
-    repo._store.clear()
     cache._cache.clear()
 
 

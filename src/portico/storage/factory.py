@@ -11,7 +11,6 @@ from portico.storage.base import BaseServerRepository
 from portico.storage.cosmos import CosmosDBServerRepository
 from portico.storage.dynamodb import DynamoDBServerRepository
 from portico.storage.firestore import FirestoreServerRepository
-from portico.storage.memory import MemoryServerRepository
 from portico.storage.sqlite import SQLiteServerRepository
 
 logger = logging.getLogger(__name__)
@@ -32,8 +31,6 @@ def get_server_repository() -> BaseServerRepository:
             _storage_instance = FirestoreServerRepository()
         elif backend == "cosmosdb":
             _storage_instance = CosmosDBServerRepository()
-        elif backend == "memory":
-            _storage_instance = MemoryServerRepository()
         else:
             logger.warning("Unknown STORAGE_BACKEND '%s', fallback to SQLite", backend)
             _storage_instance = SQLiteServerRepository()

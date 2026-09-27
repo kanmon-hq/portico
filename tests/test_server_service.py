@@ -33,7 +33,7 @@ class TestServerService:
         assert servers == []
 
     @pytest.mark.asyncio
-    async def test_tenant_isolation_in_memory(self):
+    async def test_tenant_isolation(self):
         """テナント A と テナント B の外部サーバーが相互に混ざらない。"""
         repo = get_server_repository()
         await repo.create_server(

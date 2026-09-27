@@ -5,7 +5,6 @@ MCP Gateway — 設定管理モジュール
 from __future__ import annotations
 
 import os
-import secrets
 
 ENVIRONMENT = os.getenv("ENVIRONMENT", os.getenv("ENV", "development")).lower()
 ALLOW_LOCAL_MCP_SERVERS = os.getenv(
@@ -21,7 +20,7 @@ ROOT_PATH = os.getenv("ROOT_PATH", "/gateway")
 MAX_SERVERS_PER_TENANT = int(os.getenv("MAX_SERVERS_PER_TENANT", "50"))
 
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
-INTERNAL_SERVICE_SECRET = os.getenv("INTERNAL_SERVICE_SECRET", secrets.token_hex(32))
+INTERNAL_API_KEY = os.getenv("INTERNAL_API_KEY")
 
 # ── Gateway 共有シークレット認証設定 (Kura 準拠) ─────────────────────────
 # 認証ゲートウェイ (Tollgate / Proxy 等) からのアクセスを相互信頼確認する共有シークレット
@@ -32,7 +31,7 @@ INSECURE_NO_GATEWAY_AUTH = os.getenv("INSECURE_NO_GATEWAY_AUTH", "false").lower(
 DEFAULT_TENANT_ID = os.getenv("DEFAULT_TENANT_ID", "tenant_default")
 
 # ── ストレージ設定 (Zero-Ops / Multi-Cloud) ─────────────────────────────
-# sqlite (既定) | dynamodb (AWS) | firestore (GCP) | cosmosdb (Azure) | memory
+# sqlite (既定) | dynamodb (AWS) | firestore (GCP) | cosmosdb (Azure)
 STORAGE_BACKEND = os.getenv("STORAGE_BACKEND", "sqlite").lower()
 
 # SQLite 設定

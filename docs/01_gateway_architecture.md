@@ -119,4 +119,4 @@ MCP Gateway が利用する環境変数一覧。
 | `MOCK_EXTERNAL_APIS` | `true` | 任意 | `true` の場合、外部 SaaS を実際に叩かずモックレスポンスを返却 |
 | `POSTGRES_URL` | `postgresql://...` | 任意 | PostgreSQL 接続 URL (asyncpg) |
 | `SECRET_ENCRYPTION_KEY` | *(未設定時生成)* | 本番必須 | 外部サーバー認証情報暗号化キー (AES-256) |
-| `INTERNAL_SERVICE_SECRET` | *(未設定時生成)* | 推奨 | 内部サービス間専用通信シークレット |
+| `INTERNAL_API_KEY` | *(未設定時無効)* | 推奨 | 内部サービス専用 API の Bearer 認証キー (`Authorization: Bearer <INTERNAL_API_KEY>`) |

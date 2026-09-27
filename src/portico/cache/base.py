@@ -14,24 +14,24 @@ class BaseCache(ABC):
     @abstractmethod
     async def get(self, key: str) -> Any | None:
         """キャッシュ値を取得"""
-        pass
+        ...
 
     @abstractmethod
     async def set(self, key: str, value: Any, ttl: int | None = None) -> None:
         """キャッシュ値を設定"""
-        pass
+        ...
 
     @abstractmethod
     async def delete(self, key: str) -> None:
         """キャッシュキーを削除"""
-        pass
+        ...
 
     @abstractmethod
     async def delete_prefix(self, prefix: str) -> None:
         """指定プレフィックスに一致するキーを一括削除"""
-        pass
+        ...
 
     @abstractmethod
     async def clear(self) -> None:
         """全キャッシュをクリア"""
-        pass
+        ...

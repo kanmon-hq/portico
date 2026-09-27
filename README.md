@@ -166,7 +166,7 @@ portico/
 ### 3. 内部サービス専用 API (`/v1/internal`)
 | メソッド | パス | 説明 | 認証・要件 |
 |:---|:---|:---|:---|
-| `DELETE` | `/v1/internal/tenants/{tenant_id}` | テナント削除時の外部 MCP サーバー一括削除クリーンアップ | `X-Internal-Secret` |
+| `DELETE` | `/v1/internal/tenants/{tenant_id}` | テナント削除時の外部 MCP サーバー一括削除クリーンアップ | `Authorization: Bearer <INTERNAL_API_KEY>` |
 
 ### 4. 運用 & オブザーバビリティ
 | メソッド | パス | 説明 |
@@ -190,7 +190,7 @@ portico/
 | `GATEWAY_SHARED_SECRET_PREVIOUS` | *(未設定)* | 任意 | シークレットローテーション移行期間用の旧シークレット |
 | `GATEWAY_SECRET_HEADER` | `X-Gateway-Secret` | 任意 | シークレットを受け取るヘッダー名 |
 | `INSECURE_NO_GATEWAY_AUTH` | `false` | 任意 | `true` の場合、シークレット検証をバイパス (開発・検証専用) |
-| `STORAGE_BACKEND` | `sqlite` | 任意 | マスターストア種別 (`sqlite` / `dynamodb` / `firestore` / `cosmosdb` / `memory`) |
+| `STORAGE_BACKEND` | `sqlite` | 任意 | マスターストア種別 (`sqlite` / `dynamodb` / `firestore` / `cosmosdb`) |
 | `SQLITE_DB_PATH` | `portico.db` | 任意 | SQLite データベースファイルパス |
 | `CACHE_LAYER` | `two_tier` / `memory` | 任意 | キャッシュ階層 (`two_tier` / `memory` / `valkey` / `none`) |
 | `VALKEY_URL` | `redis://localhost:6379/0` | 任意 | 分散キャッシュ Valkey / Redis 接続 URL |
@@ -198,7 +198,7 @@ portico/
 | `CACHE_L2_TTL_SECONDS` | `300` | 任意 | L2 分散キャッシュ保持秒数 |
 | `MOCK_EXTERNAL_APIS` | `true` | 任意 | `true` の場合、実 SaaS を呼ばずにモック応答を返却 |
 | `ALLOW_LOCAL_MCP_SERVERS` | `true` (dev) / `false` (prod) | 任意 | ローカル / プライベート IP への外部 MCP サーバー登録可否 |
-| `INTERNAL_SERVICE_SECRET` | *(未設定時ランダム生成)* | 推奨 | 内部サービス間専用通信シークレット (`X-Internal-Secret` 照合用) |
+| `INTERNAL_API_KEY` | *(未設定)* | 推奨 | 内部サービス専用 API の Bearer 認証キー (`Authorization: Bearer <INTERNAL_API_KEY>`) |
 | `SECRET_ENCRYPTION_KEY` | *(未設定時ランダム生成)* | 本番必須 | 外部サーバー認証情報の AES-256 暗号化キー。本番環境で未設定時は起動時エラー (Fail-Fast) |
 | `LOG_LEVEL` | `INFO` | 任意 | ログ出力レベル (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
 

@@ -7,15 +7,18 @@ from __future__ import annotations
 import secrets
 
 from fastapi import Depends, Header, HTTPException, Query, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from portico.core.config import (
     DEFAULT_TENANT_ID,
     GATEWAY_SECRET_HEADER,
     INSECURE_NO_GATEWAY_AUTH,
-    INTERNAL_SERVICE_SECRET,
+    INTERNAL_API_KEY,
     get_valid_gateway_secrets,
 )
 from portico.schemas.context import RequestContext
+
+internal_bearer = HTTPBearer(auto_error=False)
 
 
 def verify_gateway_secret(secret_value: str | None) -> bool:
@@ -91,17 +94,28 @@ def get_tenant_id(
     return ctx.tenant_id
 
 
-def require_internal_secret(
-    x_internal_secret: str | None = Header(None, alias="X-Internal-Secret"),
+def require_internal_api_key(
+    credentials: HTTPAuthorizationCredentials | None = Depends(internal_bearer),
 ) -> str:
-    """内部サービス間専用エンドポイントの共有シークレットを検証する。"""
-    # Use secrets.compare_digest to prevent timing attacks
-    if not x_internal_secret or not secrets.compare_digest(x_internal_secret, INTERNAL_SERVICE_SECRET):
+    """内部専用エンドポイントの Bearer トークン (INTERNAL_API_KEY) を検証する。"""
+    if not INTERNAL_API_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Internal API is disabled: INTERNAL_API_KEY is not configured",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if not credentials or not credentials.credentials:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized: Missing or invalid Authorization Bearer header",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if not secrets.compare_digest(credentials.credentials, INTERNAL_API_KEY):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access forbidden: Invalid or missing internal service secret",
+            detail="Access forbidden: Invalid internal API key",
         )
-    return x_internal_secret
+    return credentials.credentials
 
 
 def get_scopes(
@@ -116,4 +130,10 @@ def get_scopes(
     raw = x_scopes or x_scope
     if raw is None:
         return None
-    return [t.strip() for t in raw.replace(",", " ").split() if t.strip()]
+
+    scopes: list[str] = []
+    for chunk in raw.replace(",", " ").split():
+        s = chunk.strip()
+        if s and s not in scopes:
+            scopes.append(s)
+    return scopes

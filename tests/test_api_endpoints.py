@@ -13,7 +13,6 @@ import httpx
 import pytest
 from fastapi.testclient import TestClient
 
-from portico.core.config import INTERNAL_SERVICE_SECRET
 from portico.storage.factory import get_server_repository
 
 
@@ -86,19 +85,36 @@ class TestDependencyInjection:
         assert len(data) >= 1
         assert data[0]["tenant_id"] == "tenant_default"
 
-    def test_internal_secret_forbidden_when_missing_or_invalid(self, client: TestClient):
-        """内部APIに不正または欠落した X-Internal-Secret を渡すと 403 となる。"""
-        resp_missing = client.delete("/v1/internal/tenants/t1")
-        assert resp_missing.status_code == 403
+    def test_internal_api_key_forbidden_when_missing_or_invalid(self, client: TestClient, monkeypatch):
+        """内部APIに不正または欠落した Authorization Bearer トークンを渡すと 401 または 403 となる。"""
+        monkeypatch.setattr("portico.api.deps.INTERNAL_API_KEY", "test-internal-key-12345")
 
-        resp_invalid = client.delete("/v1/internal/tenants/t1", headers={"X-Internal-Secret": "wrong-secret"})
+        resp_missing = client.delete("/v1/internal/tenants/t1")
+        assert resp_missing.status_code == 401
+
+        resp_invalid = client.delete(
+            "/v1/internal/tenants/t1",
+            headers={"Authorization": "Bearer wrong-key"},
+        )
         assert resp_invalid.status_code == 403
 
-    def test_internal_secret_authorized(self, client: TestClient):
-        """正しい X-Internal-Secret で内部APIにアクセスできる。"""
+    def test_internal_api_key_disabled_when_not_configured(self, client: TestClient, monkeypatch):
+        """INTERNAL_API_KEY が未設定の場合は 401 で拒絶される。"""
+        monkeypatch.setattr("portico.api.deps.INTERNAL_API_KEY", None)
+        resp = client.delete(
+            "/v1/internal/tenants/t1",
+            headers={"Authorization": "Bearer any-key"},
+        )
+        assert resp.status_code == 401
+
+    def test_internal_api_key_authorized(self, client: TestClient, monkeypatch):
+        """正しい INTERNAL_API_KEY Bearer トークンで内部APIにアクセスできる。"""
+        test_key = "internal-secret-key-abcdef"
+        monkeypatch.setattr("portico.api.deps.INTERNAL_API_KEY", test_key)
+
         resp = client.delete(
             "/v1/internal/tenants/tenant_clean",
-            headers={"X-Internal-Secret": INTERNAL_SERVICE_SECRET},
+            headers={"Authorization": f"Bearer {test_key}"},
         )
         assert resp.status_code == 200
         data = resp.json()
@@ -296,3 +312,25 @@ class TestToolDispatchService:
             call_json = mock_post.call_args[1].get("json", {})
             assert call_json.get("method") == "tools/call"
             assert call_json.get("params", {}).get("name") == "deploy"
+
+
+@pytest.mark.asyncio
+async def test_app_lifespan():
+    """FastAPI アプリケーションの lifespan startup / shutdown ライフサイクルが正常に完走すること"""
+    from portico.main import app, lifespan
+
+    async with lifespan(app):
+        # Startup completed
+        repo = get_server_repository()
+        assert repo is not None
+
+
+def test_get_scopes_helper():
+    """get_scopes 依存性関数のパース動作検証"""
+    from portico.api.deps import get_scopes
+
+    assert get_scopes(None, None) is None
+    assert get_scopes("read,write", None) == ["read", "write"]
+    assert get_scopes(None, "admin audit") == ["admin", "audit"]
+    assert get_scopes("read, read, write", None) == ["read", "write"]
+
