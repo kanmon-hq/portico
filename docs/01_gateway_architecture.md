@@ -117,6 +117,14 @@ MCP Gateway が利用する環境変数一覧。
 | `ROOT_PATH` | `/gateway` | 任意 | リバースプロキシ（Nginx / ALB）配下用のルートパス |
 | `LOG_LEVEL` | `INFO` | 任意 | ログ出力レベル (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
 | `MOCK_EXTERNAL_APIS` | `true` | 任意 | `true` の場合、外部 SaaS を実際に叩かずモックレスポンスを返却 |
-| `POSTGRES_URL` | `postgresql://...` | 任意 | PostgreSQL 接続 URL (asyncpg) |
-| `SECRET_ENCRYPTION_KEY` | *(未設定時生成)* | 本番必須 | 外部サーバー認証情報暗号化キー (AES-256) |
+| `STORAGE_BACKEND` | `sqlite` | 任意 | マスターストア種別 (`sqlite` / `dynamodb` / `firestore` / `cosmosdb`) |
+| `SQLITE_DB_PATH` | `portico.db` | 任意 | SQLite DB ファイルパス (`:memory:` でインメモリ) |
+| `CACHE_LAYER` | `two_tier` / `memory` | 任意 | キャッシュ階層 (`two_tier` / `memory` / `valkey` / `none`) |
+| `VALKEY_URL` | `redis://localhost:6379/0` | 任意 | 分散キャッシュ Valkey / Redis 接続 URL |
+| `SECRET_ENCRYPTION_KEY` | *(未設定時ランダム生成)* | 本番必須 | 外部サーバー認証情報暗号化キー (AES-256) |
 | `INTERNAL_API_KEY` | *(未設定時無効)* | 推奨 | 内部サービス専用 API の Bearer 認証キー (`Authorization: Bearer <INTERNAL_API_KEY>`) |
+| `DEFAULT_TENANT_ID` | `tenant_default` | 任意 | テナント未指定時の既定テナント ID |
+| `ALLOW_LOCAL_MCP_SERVERS` | `true` (dev) / `false` (prod) | 任意 | ローカル / プライベート IP への外部 MCP サーバー登録可否 |
+| `MAX_SERVERS_PER_TENANT` | `50` | 任意 | テナント毎の外部 MCP サーバー登録上限数 |
+| `TOOL_CACHE_TTL_SECONDS` | `60` | 任意 | ツール集約キャッシュ TTL (秒) |
+| `EXTERNAL_MCP_TIMEOUT_SECONDS` | `5.0` | 任意 | 外部 MCP サーバー通信タイムアウト (秒) |

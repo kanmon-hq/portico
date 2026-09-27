@@ -57,6 +57,50 @@ services:
       timeout: 3s
       retries: 5
 
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin:latest
+    container_name: dynamodb-admin
+    ports:
+      - "8002:8001"
+    environment:
+      DYNAMO_ENDPOINT: http://dynamodb-local:8000
+      AWS_REGION: ap-northeast-1
+    profiles:
+      - database
+    depends_on:
+      - dynamodb-local
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./deploy/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    profiles:
+      - monitor
+    depends_on:
+      - portico
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    volumes:
+      - ./deploy/monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./deploy/monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./deploy/monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    profiles:
+      - monitor
+    depends_on:
+      - prometheus
+
 volumes:
   dynamodb_data:
   valkey_data:
+

@@ -183,6 +183,7 @@ portico/
 
 主要な環境変数（詳細は [`.env.example`](.env.example) を参照）：
 
+### 1. 基本 & セキュリティ設定
 | 変数名 | デフォルト値 | 必須 | 説明 |
 |:---|:---|:---:|:---|
 | `ENVIRONMENT` | `development` | 任意 | 実行環境 (`development` / `production`) |
@@ -190,17 +191,40 @@ portico/
 | `GATEWAY_SHARED_SECRET_PREVIOUS` | *(未設定)* | 任意 | シークレットローテーション移行期間用の旧シークレット |
 | `GATEWAY_SECRET_HEADER` | `X-Gateway-Secret` | 任意 | シークレットを受け取るヘッダー名 |
 | `INSECURE_NO_GATEWAY_AUTH` | `false` | 任意 | `true` の場合、シークレット検証をバイパス (開発・検証専用) |
-| `STORAGE_BACKEND` | `sqlite` | 任意 | マスターストア種別 (`sqlite` / `dynamodb` / `firestore` / `cosmosdb`) |
-| `SQLITE_DB_PATH` | `portico.db` | 任意 | SQLite データベースファイルパス |
-| `CACHE_LAYER` | `two_tier` / `memory` | 任意 | キャッシュ階層 (`two_tier` / `memory` / `valkey` / `none`) |
-| `VALKEY_URL` | `redis://localhost:6379/0` | 任意 | 分散キャッシュ Valkey / Redis 接続 URL |
-| `CACHE_L1_TTL_SECONDS` | `30` | 任意 | L1 インメモリキャッシュ保持秒数 |
-| `CACHE_L2_TTL_SECONDS` | `300` | 任意 | L2 分散キャッシュ保持秒数 |
-| `MOCK_EXTERNAL_APIS` | `true` | 任意 | `true` の場合、実 SaaS を呼ばずにモック応答を返却 |
-| `ALLOW_LOCAL_MCP_SERVERS` | `true` (dev) / `false` (prod) | 任意 | ローカル / プライベート IP への外部 MCP サーバー登録可否 |
 | `INTERNAL_API_KEY` | *(未設定)* | 推奨 | 内部サービス専用 API の Bearer 認証キー (`Authorization: Bearer <INTERNAL_API_KEY>`) |
 | `SECRET_ENCRYPTION_KEY` | *(未設定時ランダム生成)* | 本番必須 | 外部サーバー認証情報の AES-256 暗号化キー。本番環境で未設定時は起動時エラー (Fail-Fast) |
+| `DEFAULT_TENANT_ID` | `tenant_default` | 任意 | テナント未指定時のフォールバックテナント ID |
+| `ALLOW_LOCAL_MCP_SERVERS` | `true` (dev) / `false` (prod) | 任意 | ローカル / プライベート IP への外部 MCP サーバー登録可否 (SSRF 防御) |
+| `MOCK_EXTERNAL_APIS` | `true` (dev) / `false` (prod) | 任意 | `true` の場合、実 SaaS を呼ばずにモック応答を返却 |
 | `LOG_LEVEL` | `INFO` | 任意 | ログ出力レベル (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
+| `ROOT_PATH` | `/gateway` | 任意 | リバースプロキシ配下運用のためのルートパス |
+
+### 2. マスターストア設定 (`STORAGE_BACKEND`)
+| 変数名 | デフォルト値 | 対象バックエンド | 説明 |
+|:---|:---|:---:|:---|
+| `STORAGE_BACKEND` | `sqlite` | 共通 | マスターストア種別 (`sqlite` / `dynamodb` / `firestore` / `cosmosdb`) |
+| `SQLITE_DB_PATH` | `portico.db` | `sqlite` | SQLite データベースファイルパス（`:memory:` でインメモリ動作） |
+| `DYNAMODB_TABLE_NAME` | `portico_servers` | `dynamodb` | AWS DynamoDB テーブル名 |
+| `AWS_REGION` | `ap-northeast-1` | `dynamodb` | AWS リージョン |
+| `DYNAMODB_ENDPOINT` | *(未設定)* | `dynamodb` | DynamoDB Local 接続用エンドポイント URL |
+| `FIRESTORE_COLLECTION` | `portico_servers` | `firestore` | GCP Cloud Firestore コレクション名 |
+| `GCP_PROJECT_ID` | *(未設定)* | `firestore` | GCP プロジェクト ID |
+| `COSMOS_ENDPOINT` | *(未設定)* | `cosmosdb` | Azure Cosmos DB エンドポイント URI |
+| `COSMOS_KEY` | *(未設定)* | `cosmosdb` | Azure Cosmos DB プライマリキー |
+| `COSMOS_DATABASE` | `portico_db` | `cosmosdb` | Azure Cosmos DB データベース名 |
+| `COSMOS_CONTAINER` | `portico_servers` | `cosmosdb` | Azure Cosmos DB コンテナ名 |
+
+### 3. 二段キャッシュ & パフォーマンス設定
+| 変数名 | デフォルト値 | 必須 | 説明 |
+|:---|:---|:---:|:---|
+| `CACHE_LAYER` | `two_tier` / `memory` | 任意 | キャッシュ階層 (`two_tier` / `memory` / `valkey` / `none`) |
+| `VALKEY_URL` | `redis://localhost:6379/0` | 任意 | 分散キャッシュ Valkey / Redis 接続 URL (`REDIS_URL` も利用可) |
+| `CACHE_L1_TTL_SECONDS` | `30` | 任意 | L1 インメモリキャッシュ保持秒数 |
+| `CACHE_L1_MAXSIZE` | `1000` | 任意 | L1 インメモリキャッシュ最大保持エントリ数 |
+| `CACHE_L2_TTL_SECONDS` | `300` | 任意 | L2 分散キャッシュ保持秒数 |
+| `TOOL_CACHE_TTL_SECONDS` | `60` | 任意 | ツール集約定義のキャッシュ保持秒数 |
+| `MAX_SERVERS_PER_TENANT` | `50` | 任意 | テナント毎に登録可能な外部 MCP サーバー最大数 |
+| `EXTERNAL_MCP_TIMEOUT_SECONDS` | `5.0` | 任意 | 外部 MCP サーバー通信時のタイムアウト秒数 |
 
 ---
 
@@ -216,8 +240,13 @@ portico/
 # 1. 環境変数の準備
 cp .env.example .env
 
-# 2. コンテナ起動 (Portico + Valkey)
+# 2. コンテナ起動 (Portico + Valkey + DynamoDB Local)
 docker compose up -d --build
+
+# (任意) データベース管理画面やメトリクス監視ツールも同時に起動する場合
+# --profile database: DynamoDB Admin (http://localhost:8002)
+# --profile monitor: Prometheus (http://localhost:9090), Grafana (http://localhost:3000)
+docker compose --profile database --profile monitor up -d
 
 # 3. ログ確認
 docker compose logs -f portico
@@ -229,6 +258,9 @@ curl -i http://localhost:8001/readyz
 
 - **Portico ゲートウェイ**: `http://localhost:8001`
 - **OpenAPI 仕様**: `http://localhost:8001/v1/openapi.json`
+- **DynamoDB Admin (GUI)**: `http://localhost:8002` (`--profile database` 有効時)
+- **Grafana ダッシュボード**: `http://localhost:3000` (`--profile monitor` 有効時, 認証なし Admin 自動ログイン)
+- **Prometheus**: `http://localhost:9090` (`--profile monitor` 有効時)
 
 ### 2. ローカル環境での起動 (uv, ゼロ依存 SQLite)
 
