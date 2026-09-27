@@ -17,10 +17,15 @@ MOCK_EXTERNAL_APIS = os.getenv(
 ).lower() in ("true", "1", "yes")
 
 ROOT_PATH = os.getenv("ROOT_PATH", "/gateway")
+OPENAPI_URL = os.getenv("OPENAPI_URL", "/openapi.json")
+DOCS_URL = os.getenv("DOCS_URL")
+REDOC_URL = os.getenv("REDOC_URL")
+SCALAR_URL = os.getenv("SCALAR_URL", os.getenv("SCALAR_DOCS_URL"))
 MAX_SERVERS_PER_TENANT = int(os.getenv("MAX_SERVERS_PER_TENANT", "50"))
 
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 INTERNAL_API_KEY = os.getenv("INTERNAL_API_KEY")
+
 
 # ── Gateway 共有シークレット認証設定 (Kura 準拠) ─────────────────────────
 # 認証ゲートウェイ (Tollgate / Proxy 等) からのアクセスを相互信頼確認する共有シークレット

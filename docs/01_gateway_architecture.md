@@ -115,7 +115,12 @@ MCP Gateway が利用する環境変数一覧。
 | `GATEWAY_SECRET_HEADER` | `X-Gateway-Secret` | 任意 | シークレットを受け取るヘッダー名 |
 | `INSECURE_NO_GATEWAY_AUTH` | `false` | 任意 | `true` の場合、シークレット検証をバイパス (開発専用) |
 | `ROOT_PATH` | `/gateway` | 任意 | リバースプロキシ（Nginx / ALB）配下用のルートパス |
+| `OPENAPI_URL` | `/openapi.json` | 任意 | OpenAPI 3.1 仕様エンドポイントパス (空文字等で無効化可) |
+| `DOCS_URL` | *(無効)* | 任意 | Swagger UI ドキュメントパス (例: `/docs`) |
+| `REDOC_URL` | *(無効)* | 任意 | ReDoc ドキュメントパス (例: `/redoc`) |
+| `SCALAR_URL` | *(無効)* | 任意 | Scalar API Reference ドキュメントパス (例: `/scalar`) |
 | `LOG_LEVEL` | `INFO` | 任意 | ログ出力レベル (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
+
 | `MOCK_EXTERNAL_APIS` | `true` | 任意 | `true` の場合、外部 SaaS を実際に叩かずモックレスポンスを返却 |
 | `STORAGE_BACKEND` | `sqlite` | 任意 | マスターストア種別 (`sqlite` / `dynamodb` / `firestore` / `cosmosdb`) |
 | `SQLITE_DB_PATH` | `portico.db` | 任意 | SQLite DB ファイルパス (`:memory:` でインメモリ) |

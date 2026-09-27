@@ -14,7 +14,7 @@ from portico.api.routes import internal, ops, servers
 
 gateway_router = APIRouter()
 
-# システム系ルート (/health, /health/live, /health/ready, /livez, /readyz, /metrics)
+# システム系ルート (/health, /livez, /readyz, /metrics)
 gateway_router.include_router(ops.router)
 
 # 内部専用非公開ルート (/v1/internal/*)

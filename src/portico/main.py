@@ -10,9 +10,18 @@ from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
 from portico.api.router import gateway_router
-from portico.core.config import LOG_LEVEL, ROOT_PATH, validate_gateway_auth_config
+from portico.core.config import (
+    DOCS_URL,
+    LOG_LEVEL,
+    OPENAPI_URL,
+    REDOC_URL,
+    ROOT_PATH,
+    SCALAR_URL,
+    validate_gateway_auth_config,
+)
 from portico.core.fastmcp_hub import gateway_mcp
 from portico.schemas.error import ErrorResponse, HTTPValidationError
 from portico.services.crypto import validate_crypto_config
@@ -54,17 +63,60 @@ COMMON_RESPONSES = {
 }
 
 
+def _resolve_url(url: str | None) -> str | None:
+    if url is None:
+        return None
+    cleaned = url.strip()
+    if cleaned.lower() in ("", "none", "false", "null"):
+        return None
+    return cleaned
+
+
+resolved_openapi_url = _resolve_url(OPENAPI_URL)
+resolved_scalar_url = _resolve_url(SCALAR_URL)
+
 app = FastAPI(
     title="Portico — MCP Gateway",
     description="SaaS ツール連携および外部 MCP サーバーの統合ハブ・実行ゲートウェイ。",
     version="0.1.0",
     root_path=ROOT_PATH,
     lifespan=lifespan,
-    docs_url=None,
-    redoc_url=None,
-    openapi_url="/v1/openapi.json",
+    docs_url=_resolve_url(DOCS_URL),
+    redoc_url=_resolve_url(REDOC_URL),
+    openapi_url=resolved_openapi_url,
     responses=COMMON_RESPONSES,
 )
+
+
+if resolved_scalar_url and resolved_openapi_url:
+    @app.get(resolved_scalar_url, include_in_schema=False)
+    async def scalar_docs() -> HTMLResponse:
+        """Scalar API Reference ドキュメント UI を返却"""
+        spec_url = (
+            f"{ROOT_PATH.rstrip('/')}{resolved_openapi_url}"
+            if ROOT_PATH and ROOT_PATH != "/" and not resolved_openapi_url.startswith("http")
+            else resolved_openapi_url
+        )
+        html = f"""<!doctype html>
+<html>
+  <head>
+    <title>Portico — API Reference</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <script
+      id="api-reference"
+      type="application/json"
+      data-url="{spec_url}">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+  </body>
+</html>
+"""
+        return HTMLResponse(content=html)
+
+
 
 
 # ── Include REST APIs & Internal Routes ──────────────────────────────

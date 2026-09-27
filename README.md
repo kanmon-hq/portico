@@ -171,11 +171,11 @@ portico/
 ### 4. 運用 & オブザーバビリティ
 | メソッド | パス | 説明 |
 |:---|:---|:---|
-| `GET` | `/livez` (`/health/live`) | **Liveness プローブ** (プロセスの死活監視、即座に 200 返却) |
-| `GET` | `/readyz` (`/health/ready`) | **Readiness プローブ** (ストレージ疎通確認、受付準備完了判定) |
+| `GET` | `/livez` | **Liveness プローブ** (プロセスの死活監視、即座に 200 返却) |
+| `GET` | `/readyz` | **Readiness プローブ** (ストレージ疎通確認、受付準備完了判定) |
 | `GET` | `/health` | **総合ヘルスチェック** (プロセス生存 + ストレージ疎通状態) |
 | `GET` | `/metrics` | **Prometheus メトリクス** (ツール実行数、レイテンシ等) |
-| `GET` | `/v1/openapi.json` | OpenAPI 3.1 仕様 JSON |
+| `GET` | `/openapi.json` | OpenAPI 3.1 仕様 JSON (`OPENAPI_URL` でパス変更可) |
 
 ---
 
@@ -198,6 +198,10 @@ portico/
 | `MOCK_EXTERNAL_APIS` | `true` (dev) / `false` (prod) | 任意 | `true` の場合、実 SaaS を呼ばずにモック応答を返却 |
 | `LOG_LEVEL` | `INFO` | 任意 | ログ出力レベル (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
 | `ROOT_PATH` | `/gateway` | 任意 | リバースプロキシ配下運用のためのルートパス |
+| `OPENAPI_URL` | `/openapi.json` | 任意 | OpenAPI 3.1 仕様エンドポイントパス (空文字等で無効化可) |
+| `DOCS_URL` | *(無効)* | 任意 | Swagger UI ドキュメントパス (例: `/docs`) |
+| `REDOC_URL` | *(無効)* | 任意 | ReDoc ドキュメントパス (例: `/redoc`) |
+| `SCALAR_URL` | *(無効)* | 任意 | Scalar API Reference ドキュメントパス (例: `/scalar`) |
 
 ### 2. マスターストア設定 (`STORAGE_BACKEND`)
 | 変数名 | デフォルト値 | 対象バックエンド | 説明 |
@@ -257,10 +261,11 @@ curl -i http://localhost:8001/readyz
 ```
 
 - **Portico ゲートウェイ**: `http://localhost:8001`
-- **OpenAPI 仕様**: `http://localhost:8001/v1/openapi.json`
+- **OpenAPI 仕様**: `http://localhost:8001/openapi.json`
 - **DynamoDB Admin (GUI)**: `http://localhost:8002` (`--profile database` 有効時)
 - **Grafana ダッシュボード**: `http://localhost:3000` (`--profile monitor` 有効時, 認証なし Admin 自動ログイン)
 - **Prometheus**: `http://localhost:9090` (`--profile monitor` 有効時)
+
 
 ### 2. ローカル環境での起動 (uv, ゼロ依存 SQLite)
 

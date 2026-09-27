@@ -29,14 +29,12 @@ async def health():
     return GatewayHealthResponse(status="ok", service="portico", mock=MOCK_EXTERNAL_APIS)
 
 
-@router.get("/health/live", response_model=ProbeResponse)
 @router.get("/livez", response_model=ProbeResponse)
 async def liveness():
     """Liveness probe (コンテナ稼働確認)"""
     return ProbeResponse(status="ok")
 
 
-@router.get("/health/ready", response_model=ProbeResponse)
 @router.get("/readyz", response_model=ProbeResponse)
 async def readiness():
     """Readiness probe (リクエスト受付可能確認)"""
