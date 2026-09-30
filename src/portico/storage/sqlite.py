@@ -10,7 +10,7 @@ from typing import Any
 
 import aiosqlite
 
-from portico.core.config import SQLITE_DB_PATH
+from portico.core.config import SQLITE_PATH
 from portico.storage.base import BaseServerRepository
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class SQLiteServerRepository(BaseServerRepository):
     """SQLite をバックエンドとするカスタムサーバーリポジトリ"""
 
-    def __init__(self, db_path: str = SQLITE_DB_PATH):
+    def __init__(self, db_path: str = SQLITE_PATH):
         self.db_path = db_path
         self._db: aiosqlite.Connection | None = None
 

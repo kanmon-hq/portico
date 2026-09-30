@@ -38,7 +38,7 @@ Portico への貢献をご検討いただき、ありがとうございます！
 ## 2. 開発ワークフロー
 
 ### Issue の作成
-- バグの報告や新機能の提案を行う場合は、まず [GitHub Issues](https://github.com/northfieldzz/portico/issues) を作成してください。
+- バグの報告や新機能の提案を行う場合は、まず [GitHub Issues](https://github.com/kanmon-hq/portico/issues) を作成してください。
 - 既存の Issue や PR で類似の議論がないか事前に確認してください。
 
 ### ブランチ戦略
@@ -83,7 +83,7 @@ git checkout -b feature/external-server-health-monitor
 
 ```bash
 # 1. リポジトリのクローン
-git clone https://github.com/northfieldzz/portico.git
+git clone https://github.com/kanmon-hq/portico.git
 cd portico
 
 # 2. 仮想環境の作成と依存関係の同期

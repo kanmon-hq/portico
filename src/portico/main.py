@@ -14,9 +14,9 @@ from fastapi.responses import HTMLResponse
 
 from portico.api.router import gateway_router
 from portico.core.config import (
-    DOCS_URL,
+    DOCS_PATH,
     LOG_LEVEL,
-    OPENAPI_URL,
+    OPENAPI_PATH,
     REDOC_URL,
     ROOT_PATH,
     SCALAR_URL,
@@ -72,7 +72,7 @@ def _resolve_url(url: str | None) -> str | None:
     return cleaned
 
 
-resolved_openapi_url = _resolve_url(OPENAPI_URL)
+resolved_openapi_url = _resolve_url(OPENAPI_PATH)
 resolved_scalar_url = _resolve_url(SCALAR_URL)
 
 app = FastAPI(
@@ -81,7 +81,7 @@ app = FastAPI(
     version="0.1.0",
     root_path=ROOT_PATH,
     lifespan=lifespan,
-    docs_url=_resolve_url(DOCS_URL),
+    docs_url=_resolve_url(DOCS_PATH),
     redoc_url=_resolve_url(REDOC_URL),
     openapi_url=resolved_openapi_url,
     responses=COMMON_RESPONSES,

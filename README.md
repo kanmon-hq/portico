@@ -173,9 +173,9 @@ portico/
 |:---|:---|:---|
 | `GET` | `/livez` | **Liveness プローブ** (プロセスの死活監視、即座に 200 返却) |
 | `GET` | `/readyz` | **Readiness プローブ** (ストレージ疎通確認、受付準備完了判定) |
-| `GET` | `/health` | **総合ヘルスチェック** (プロセス生存 + ストレージ疎通状態) |
+| `GET` | `/healthz` | **総合ヘルスチェック** (プロセス生存 + ストレージ疎通状態) |
 | `GET` | `/metrics` | **Prometheus メトリクス** (ツール実行数、レイテンシ等) |
-| `GET` | `/openapi.json` | OpenAPI 3.1 仕様 JSON (`OPENAPI_URL` でパス変更可) |
+| `GET` | `/openapi.json` | OpenAPI 3.1 仕様 JSON (`OPENAPI_PATH` でパス変更可) |
 
 ---
 
@@ -198,8 +198,8 @@ portico/
 | `MOCK_EXTERNAL_APIS` | `true` (dev) / `false` (prod) | 任意 | `true` の場合、実 SaaS を呼ばずにモック応答を返却 |
 | `LOG_LEVEL` | `INFO` | 任意 | ログ出力レベル (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
 | `ROOT_PATH` | `/gateway` | 任意 | リバースプロキシ配下運用のためのルートパス |
-| `OPENAPI_URL` | `/openapi.json` | 任意 | OpenAPI 3.1 仕様エンドポイントパス (空文字等で無効化可) |
-| `DOCS_URL` | *(無効)* | 任意 | Swagger UI ドキュメントパス (例: `/docs`) |
+| `OPENAPI_PATH` | `/openapi.json` | 任意 | OpenAPI 3.1 仕様エンドポイントパス (空文字等で無効化可) |
+| `DOCS_PATH` | *(無効)* | 任意 | Swagger UI ドキュメントパス (例: `/docs`) |
 | `REDOC_URL` | *(無効)* | 任意 | ReDoc ドキュメントパス (例: `/redoc`) |
 | `SCALAR_URL` | *(無効)* | 任意 | Scalar API Reference ドキュメントパス (例: `/scalar`) |
 
@@ -207,16 +207,16 @@ portico/
 | 変数名 | デフォルト値 | 対象バックエンド | 説明 |
 |:---|:---|:---:|:---|
 | `STORAGE_BACKEND` | `sqlite` | 共通 | マスターストア種別 (`sqlite` / `dynamodb` / `firestore` / `cosmosdb`) |
-| `SQLITE_DB_PATH` | `portico.db` | `sqlite` | SQLite データベースファイルパス（`:memory:` でインメモリ動作） |
+| `SQLITE_PATH` | `portico.db` | `sqlite` | SQLite データベースファイルパス（`:memory:` でインメモリ動作） |
 | `DYNAMODB_TABLE_NAME` | `portico_servers` | `dynamodb` | AWS DynamoDB テーブル名 |
 | `AWS_REGION` | `ap-northeast-1` | `dynamodb` | AWS リージョン |
 | `DYNAMODB_ENDPOINT` | *(未設定)* | `dynamodb` | DynamoDB Local 接続用エンドポイント URL |
 | `FIRESTORE_COLLECTION` | `portico_servers` | `firestore` | GCP Cloud Firestore コレクション名 |
-| `GCP_PROJECT_ID` | *(未設定)* | `firestore` | GCP プロジェクト ID |
-| `COSMOS_ENDPOINT` | *(未設定)* | `cosmosdb` | Azure Cosmos DB エンドポイント URI |
-| `COSMOS_KEY` | *(未設定)* | `cosmosdb` | Azure Cosmos DB プライマリキー |
-| `COSMOS_DATABASE` | `portico_db` | `cosmosdb` | Azure Cosmos DB データベース名 |
-| `COSMOS_CONTAINER` | `portico_servers` | `cosmosdb` | Azure Cosmos DB コンテナ名 |
+| `FIRESTORE_PROJECT_ID` | *(未設定)* | `firestore` | GCP プロジェクト ID |
+| `COSMOSDB_ENDPOINT` | *(未設定)* | `cosmosdb` | Azure Cosmos DB エンドポイント URI |
+| `COSMOSDB_KEY` | *(未設定)* | `cosmosdb` | Azure Cosmos DB プライマリキー |
+| `COSMOSDB_DATABASE` | `portico_db` | `cosmosdb` | Azure Cosmos DB データベース名 |
+| `COSMOSDB_CONTAINER` | `portico_servers` | `cosmosdb` | Azure Cosmos DB コンテナ名 |
 
 ### 3. 二段キャッシュ & パフォーマンス設定
 | 変数名 | デフォルト値 | 必須 | 説明 |

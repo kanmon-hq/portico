@@ -17,8 +17,8 @@ MOCK_EXTERNAL_APIS = os.getenv(
 ).lower() in ("true", "1", "yes")
 
 ROOT_PATH = os.getenv("ROOT_PATH", "/gateway")
-OPENAPI_URL = os.getenv("OPENAPI_URL", "/openapi.json")
-DOCS_URL = os.getenv("DOCS_URL")
+OPENAPI_PATH = os.getenv("OPENAPI_PATH", "/openapi.json")
+DOCS_PATH = os.getenv("DOCS_PATH")
 REDOC_URL = os.getenv("REDOC_URL")
 SCALAR_URL = os.getenv("SCALAR_URL", os.getenv("SCALAR_DOCS_URL"))
 MAX_SERVERS_PER_TENANT = int(os.getenv("MAX_SERVERS_PER_TENANT", "50"))
@@ -40,7 +40,7 @@ DEFAULT_TENANT_ID = os.getenv("DEFAULT_TENANT_ID", "tenant_default")
 STORAGE_BACKEND = os.getenv("STORAGE_BACKEND", "sqlite").lower()
 
 # SQLite 設定
-SQLITE_DB_PATH = os.getenv("SQLITE_DB_PATH", "portico.db")
+SQLITE_PATH = os.getenv("SQLITE_PATH", "portico.db")
 
 # AWS DynamoDB 設定
 DYNAMODB_TABLE_NAME = os.getenv("DYNAMODB_TABLE_NAME", "portico_servers")
@@ -49,13 +49,13 @@ DYNAMODB_ENDPOINT = os.getenv("DYNAMODB_ENDPOINT", os.getenv("AWS_ENDPOINT_URL")
 
 # GCP Firestore 設定
 FIRESTORE_COLLECTION = os.getenv("FIRESTORE_COLLECTION", "portico_servers")
-GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
+FIRESTORE_PROJECT_ID = os.getenv("FIRESTORE_PROJECT_ID")
 
 # Azure Cosmos DB 設定
-COSMOS_ENDPOINT = os.getenv("COSMOS_ENDPOINT")
-COSMOS_KEY = os.getenv("COSMOS_KEY")
-COSMOS_DATABASE = os.getenv("COSMOS_DATABASE", "portico_db")
-COSMOS_CONTAINER = os.getenv("COSMOS_CONTAINER", "portico_servers")
+COSMOSDB_ENDPOINT = os.getenv("COSMOSDB_ENDPOINT")
+COSMOSDB_KEY = os.getenv("COSMOSDB_KEY")
+COSMOSDB_DATABASE = os.getenv("COSMOSDB_DATABASE", "portico_db")
+COSMOSDB_CONTAINER = os.getenv("COSMOSDB_CONTAINER", "portico_servers")
 
 # ── 二段キャッシュ設定 (L1: In-Memory, L2: Valkey/Redis) ──────────────────
 # two_tier (既定: L1+L2) | memory (L1のみ) | valkey (L2のみ) | none (キャッシュ無効)

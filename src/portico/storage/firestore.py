@@ -7,7 +7,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from portico.core.config import FIRESTORE_COLLECTION, GCP_PROJECT_ID
+from portico.core.config import FIRESTORE_COLLECTION, FIRESTORE_PROJECT_ID
 from portico.storage.base import BaseServerRepository
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class FirestoreServerRepository(BaseServerRepository):
     """GCP Cloud Firestore をバックエンドとするサーバーリポジトリ"""
 
-    def __init__(self, collection_name: str = FIRESTORE_COLLECTION, project_id: str | None = GCP_PROJECT_ID):
+    def __init__(self, collection_name: str = FIRESTORE_COLLECTION, project_id: str | None = FIRESTORE_PROJECT_ID):
         self.collection_name = collection_name
         self.project_id = project_id
         self._client = None

@@ -20,7 +20,7 @@ Portico は、マルチテナント環境における MCP ゲートウェイと�
 Portico でセキュリティ上の脆弱性や懸念を発見した場合は、**公開の GitHub Issue や Pull Request を作成せず**、以下の手順で非公開にてご報告ください。
 
 1. **報告先**:
-   - [GitHub Security Advisories (非公開報告)](https://github.com/northfieldzz/portico/security/advisories/new) を通じてご報告ください。
+   - [GitHub Security Advisories (非公開報告)](https://github.com/kanmon-hq/portico/security/advisories/new) を通じてご報告ください。
    - またはリポジトリのメンテナー宛にご連絡ください。
 
 2. **報告に含めていただきたい情報**:

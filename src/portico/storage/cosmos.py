@@ -8,10 +8,10 @@ import logging
 from typing import Any
 
 from portico.core.config import (
-    COSMOS_CONTAINER,
-    COSMOS_DATABASE,
-    COSMOS_ENDPOINT,
-    COSMOS_KEY,
+    COSMOSDB_CONTAINER,
+    COSMOSDB_DATABASE,
+    COSMOSDB_ENDPOINT,
+    COSMOSDB_KEY,
 )
 from portico.storage.base import BaseServerRepository
 
@@ -23,10 +23,10 @@ class CosmosDBServerRepository(BaseServerRepository):
 
     def __init__(
         self,
-        endpoint: str | None = COSMOS_ENDPOINT,
-        key: str | None = COSMOS_KEY,
-        database_name: str = COSMOS_DATABASE,
-        container_name: str = COSMOS_CONTAINER,
+        endpoint: str | None = COSMOSDB_ENDPOINT,
+        key: str | None = COSMOSDB_KEY,
+        database_name: str = COSMOSDB_DATABASE,
+        container_name: str = COSMOSDB_CONTAINER,
     ):
         self.endpoint = endpoint
         self.key = key

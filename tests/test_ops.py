@@ -11,14 +11,17 @@ from portico.main import app
 client = TestClient(app)
 
 
-def test_health():
-    """基本ヘルスチェック /health が 200 OK を返すこと"""
-    res = client.get("/health")
+def test_healthz():
+    """基本ヘルスチェック /healthz が 200 OK を返し、旧パス /health は 404 となること"""
+    res = client.get("/healthz")
     assert res.status_code == 200
     data = res.json()
     assert data["status"] == "ok"
     assert data["service"] == "portico"
     assert "mock" in data
+
+    res_old = client.get("/health")
+    assert res_old.status_code == 404
 
 
 def test_liveness():
@@ -78,7 +81,7 @@ def test_scalar_docs_endpoint(monkeypatch):
     import portico.main as main_mod
 
     monkeypatch.setattr(config, "SCALAR_URL", "/scalar")
-    monkeypatch.setattr(config, "OPENAPI_URL", "/openapi.json")
+    monkeypatch.setattr(config, "OPENAPI_PATH", "/openapi.json")
     monkeypatch.setattr(config, "ROOT_PATH", "/gateway")
 
     # リロードして Scalar ルートを登録

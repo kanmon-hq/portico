@@ -30,7 +30,7 @@ services:
       dynamodb-local:
         condition: service_started
     healthcheck:
-      test: [ "CMD-SHELL", "wget -q --spider http://localhost:8001/health || exit 1" ]
+      test: [ "CMD-SHELL", "wget -q --spider http://localhost:8001/healthz || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 5

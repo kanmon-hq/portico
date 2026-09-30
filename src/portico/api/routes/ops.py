@@ -23,7 +23,7 @@ class ProbeResponse(BaseModel):
     status: str = Field("ok", description="プローブステータス")
 
 
-@router.get("/health", response_model=GatewayHealthResponse)
+@router.get("/healthz", response_model=GatewayHealthResponse)
 async def health():
     """サービス全体の基本ヘルスチェック"""
     return GatewayHealthResponse(status="ok", service="portico", mock=MOCK_EXTERNAL_APIS)
