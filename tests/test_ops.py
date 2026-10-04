@@ -77,6 +77,7 @@ def test_resolve_url_helper():
 def test_scalar_docs_endpoint(monkeypatch):
     """SCALAR_URL が設定されている場合、Scalar API Reference HTML が 200 OK で返ること"""
     import importlib
+
     import portico.core.config as config
     import portico.main as main_mod
 
