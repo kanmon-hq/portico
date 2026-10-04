@@ -51,6 +51,7 @@ class DynamoDBServerRepository(BaseServerRepository):
 
     async def init_storage(self) -> None:
         table = self._get_table()
+
         # Verify table connectivity / auto-create if not existing (e.g. DynamoDB Local)
         def _check_or_create():
             try:

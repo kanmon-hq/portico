@@ -112,7 +112,6 @@ def test_crypto_decryption_failures():
     assert _get_key(k32) == k32
 
 
-
 # ── 4. services/audit.py ────────────────────────────────────────────────────
 
 

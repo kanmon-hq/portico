@@ -98,5 +98,3 @@ def test_scalar_docs_endpoint(monkeypatch):
     # クリーンアップ: 元に戻して再度リロード
     monkeypatch.undo()
     importlib.reload(main_mod)
-
-

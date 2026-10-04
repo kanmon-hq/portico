@@ -333,4 +333,3 @@ def test_get_scopes_helper():
     assert get_scopes("read,write", None) == ["read", "write"]
     assert get_scopes(None, "admin audit") == ["admin", "audit"]
     assert get_scopes("read, read, write", None) == ["read", "write"]
-

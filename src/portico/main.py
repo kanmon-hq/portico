@@ -89,14 +89,11 @@ app = FastAPI(
 
 
 if resolved_scalar_url and resolved_openapi_url:
+
     @app.get(resolved_scalar_url, include_in_schema=False)
     async def scalar_docs() -> HTMLResponse:
         """Scalar API Reference ドキュメント UI を返却"""
-        spec_url = (
-            f"{ROOT_PATH.rstrip('/')}{resolved_openapi_url}"
-            if ROOT_PATH and ROOT_PATH != "/" and not resolved_openapi_url.startswith("http")
-            else resolved_openapi_url
-        )
+        spec_url = f"{ROOT_PATH.rstrip('/')}{resolved_openapi_url}" if ROOT_PATH and ROOT_PATH != "/" and not resolved_openapi_url.startswith("http") else resolved_openapi_url
         html = f"""<!doctype html>
 <html>
   <head>
@@ -115,8 +112,6 @@ if resolved_scalar_url and resolved_openapi_url:
 </html>
 """
         return HTMLResponse(content=html)
-
-
 
 
 # ── Include REST APIs & Internal Routes ──────────────────────────────

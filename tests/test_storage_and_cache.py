@@ -134,11 +134,14 @@ async def test_dynamodb_repository_crud():
     mock_boto3.dynamodb.conditions = mock_conditions
     mock_conditions.Key = MagicMock()
 
-    with patch.dict("sys.modules", {
-        "boto3": mock_boto3,
-        "boto3.dynamodb": mock_boto3.dynamodb,
-        "boto3.dynamodb.conditions": mock_conditions,
-    }):
+    with patch.dict(
+        "sys.modules",
+        {
+            "boto3": mock_boto3,
+            "boto3.dynamodb": mock_boto3.dynamodb,
+            "boto3.dynamodb.conditions": mock_conditions,
+        },
+    ):
         mock_table.query.return_value = {"Items": [mock_table.get_item.return_value["Item"]]}
         servers = await repo.list_servers(tenant_id)
         assert len(servers) == 1
@@ -412,8 +415,7 @@ async def test_storage_factory_backends(monkeypatch):
     assert isinstance(repo_fallback, SQLiteServerRepository)
 
     # 6. init_storage & close_storage lifecycle
-    with patch.object(repo_fallback, "init_storage", new_callable=AsyncMock) as mock_init, \
-         patch.object(repo_fallback, "close", new_callable=AsyncMock) as mock_close:
+    with patch.object(repo_fallback, "init_storage", new_callable=AsyncMock) as mock_init, patch.object(repo_fallback, "close", new_callable=AsyncMock) as mock_close:
         await init_storage()
         mock_init.assert_awaited_once()
         await close_storage()
